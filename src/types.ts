@@ -26,4 +26,11 @@ export interface IHeaders {
   'If-None-Match'?: string;
 }
 
+export interface Toggle {
+  name: string;
+  enabled: boolean;
+  variant: Record<string, string>;
+  impressionData: boolean;
+}
+
 export type IContext = IStaticContext & IMutableContext;

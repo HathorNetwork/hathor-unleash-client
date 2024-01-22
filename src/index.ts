@@ -1,5 +1,5 @@
 import EventEmitter from 'node:events';
-import { IConfig, IContext, IHeaders } from './types';
+import { IConfig, IContext, IHeaders, Toggle } from './types';
 import { urlWithContextAsQuery } from './utils';
 
 export default class UnleashClient extends EventEmitter {
@@ -7,6 +7,7 @@ export default class UnleashClient extends EventEmitter {
   private context: IContext;
   private etag = '';
   private clientKey: string;
+  private toggles: Toggle[] | null;
 
   constructor({
     url,
@@ -29,6 +30,7 @@ export default class UnleashClient extends EventEmitter {
     this.url = url instanceof URL ? url : new URL(url);
     this.clientKey = clientKey;
     this.context = { appName, ...context };
+    this.toggles = null;
   }
 
   private getHeaders() {
@@ -42,12 +44,10 @@ export default class UnleashClient extends EventEmitter {
       headers['If-None-Match'] = this.etag;
     }
 
-    console.log('Headers: ', headers);
-
     return headers as unknown as Record<string, string>;
   }
 
-  public async fetchToggles() {
+  public async fetchToggles(): Promise<void> {
     const url = urlWithContextAsQuery(this.url, this.context);
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -55,44 +55,29 @@ export default class UnleashClient extends EventEmitter {
       headers: this.getHeaders(),
     });
 
+    if (!response.ok && response.status !== 304) {
+      throw new Error('Unable to fetch toggles.');
+    }
+
     if (response.ok && response.status !== 304) {
-      this.etag = response.headers.get('ETag') || '';
       const data = await response.json();
-      console.log('Data: ', data);
-    }  else if (!response.ok && response.status !== 304) {
-      console.error(
-        'Unleash: Fetching feature toggles did not have an ok response'
-      );
-    } else {
-      console.log('wtf?', response);
+
+      this.etag = response.headers.get('ETag') || '';
+      this.toggles = data.toggles as unknown as Toggle[];
     }
   }
+
+  public isEnabled(name: string): boolean {
+    if (!this.toggles) {
+      throw new Error('Toggles not loaded.');
+    }
+
+    for (let i = 0; i < this.toggles.length; i++) {
+      if (this.toggles[i].name === name) {
+        return this.toggles[i].enabled;
+      }
+    }
+
+    return false;
+  }
 }
-
-const UNLEASH_URL = 'https://unleash-proxy.b7e6a7f52ee9fefaf0c53e300cfcb014.hathor.network/proxy';
-const UNLEASH_CLIENT_KEY = 'wKNhpEXKa39aTRgIjcNsO4Im618bRGTq';
-const appName = `wallet-mobile-ios`;
-
-const options = {
-  userId: '1BB154B6-8D4C-41ED-BF7C-9400887AB2DD',
-  properties: {
-    platform: 'ios',
-    stage: 'mainnet',
-    appVersion: '0.26.3',
-  },
-};
-
-const client = new UnleashClient({
-  url: UNLEASH_URL,
-  clientKey: UNLEASH_CLIENT_KEY,
-  appName,
-  context: options,
-});
-
-const main = async () => {
-  setInterval(() => {
-    const response = client.fetchToggles();
-  }, 5000);
-};
-
-main();
