@@ -1,8 +1,7 @@
-import EventEmitter from 'node:events';
 import { FetchTogglesStatus, IConfig, IContext, IHeaders, Toggle } from './types';
 import { urlWithContextAsQuery } from './utils';
 
-export default class UnleashClient extends EventEmitter {
+export default class UnleashClient {
   private url: URL;
   private context: IContext;
   private etag = '';
@@ -15,8 +14,6 @@ export default class UnleashClient extends EventEmitter {
     appName,
     context,
   }: IConfig) {
-    super();
-
     if (!url) {
       throw new Error('url is required');
     }
