@@ -34,3 +34,8 @@ export interface Toggle {
 }
 
 export type IContext = IStaticContext & IMutableContext;
+
+export enum FetchTogglesStatus {
+  Updated = 'Updated',
+  Unchanged = 'Unchanged',
+}

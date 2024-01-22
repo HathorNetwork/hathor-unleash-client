@@ -1,5 +1,5 @@
 import EventEmitter from 'node:events';
-import { IConfig, IContext, IHeaders, Toggle } from './types';
+import { FetchTogglesStatus, IConfig, IContext, IHeaders, Toggle } from './types';
 import { urlWithContextAsQuery } from './utils';
 
 export default class UnleashClient extends EventEmitter {
@@ -47,7 +47,7 @@ export default class UnleashClient extends EventEmitter {
     return headers as unknown as Record<string, string>;
   }
 
-  public async fetchToggles(): Promise<void> {
+  public async fetchToggles(): Promise<FetchTogglesStatus> {
     const url = urlWithContextAsQuery(this.url, this.context);
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -64,7 +64,19 @@ export default class UnleashClient extends EventEmitter {
 
       this.etag = response.headers.get('ETag') || '';
       this.toggles = data.toggles as unknown as Toggle[];
+
+      return FetchTogglesStatus.Updated;
     }
+
+    return FetchTogglesStatus.Unchanged;
+  }
+
+  public getToggles(): Toggle[] {
+    if (!this.toggles) {
+      throw new Error('Toggles not downloaded yet.');
+    }
+
+    return this.toggles;
   }
 
   public isEnabled(name: string): boolean {
