@@ -1,0 +1,20 @@
+{
+  "name": "hathor-unleash-client",
+  "version": "0.0.1",
+  "description": "Hathor Unleash Client",
+  "main": "build/index.js",
+  "repository": "https://github.com/hathornetwork/hathor-unleash-client/",
+  "author": "andre@hathor.network",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "yarn@3.4.1"
+}
