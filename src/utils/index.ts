@@ -21,7 +21,7 @@ import { IContext } from '../types';
  *   Given a URL 'http://example.com' and a context object 
  *   { appName: 'wallet-mobile', clientKey: 'key', properties: { x: 'foo', y: 'bar' } },
  *   this function will return a new URL: 
- *   'http://example.com?appName=wallet-mobile&clientKey=&properties[x]=foo&properties[y]=bar'.
+ *   'http://example.com?appName=wallet-mobile&clientKey=key&properties[x]=foo&properties[y]=bar'.
  */
 export const urlWithContextAsQuery = (url: URL, context: IContext): URL => {
   const notNullOrUndefined = ([, value]: [string, string]) =>
