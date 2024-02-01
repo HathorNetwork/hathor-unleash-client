@@ -6,5 +6,10 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./build"
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "__tests__",
+    "./build/**/*"
+  ]
 }
