@@ -1,5 +1,5 @@
 {
-  "name": "hathor-unleash-client",
+  "name": "@hathor/unleash-client",
   "version": "0.1.0",
   "description": "Hathor Unleash Client",
   "main": "build/index.js",

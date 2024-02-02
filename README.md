@@ -10,3 +10,14 @@ This is a watered-down version of https://github.com/Unleash/unleash-proxy-clien
 - Store and retrieve fetched toggles.
 - Check the enablement status of a specific toggle.
 - Use ETAG to reduce bandwidth
+
+
+## Building
+
+```bash
+# Install dependencies
+yarn
+
+# Build
+yarn run build
+```
